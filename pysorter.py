@@ -61,8 +61,7 @@ class Pysorter:
             try:
                 im = Image.open(os.path.join(self.source_dir,x))
                 exif = im.getexif()
-                t = exif[306]
-                
+                t = exif[306]               
 
                 try:
                     im = Image.open(os.path.join(self.source_dir,x))
@@ -80,6 +79,7 @@ class Pysorter:
                         FAILURES += 1        
             except:
                 t = os.stat(os.path.join(self.source_dir,x)).st_mtime
+            im.close()
 
             month = datetime.datetime.fromtimestamp(t).strftime("%m")
             year = datetime.datetime.fromtimestamp(t).strftime("%y")
@@ -89,6 +89,7 @@ class Pysorter:
                 final_dest = os.path.join(dest,MONTHS[month])
                 if os.path.exists(final_dest):
                     shutil.move(os.path.join(self.source_dir,x),final_dest)
+                    pass
                 else:
                     os.makedirs(os.path.join(dest,MONTHS[month]))
                     shutil.move(os.path.join(self.source_dir,x),final_dest)

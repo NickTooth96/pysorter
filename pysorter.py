@@ -16,6 +16,8 @@ MONTHS = {  "01":"January","02":"February","03":"March",
             "07":"July","08":"August","09":"September",
             "10":"October","11":"November","12":"December"}
 
+FAILURES = 0
+
 no_arg = "ERROR: No arguments given"
 versionMSG = "Version " + __VERSION__ + " by " + __AUTHOR__
 
@@ -58,34 +60,41 @@ class Pysorter:
 
             try:
                 im = Image.open(os.path.join(self.source_dir,x))
-                ex = im.getexif()
-                # print(ex)
-                t = ex[306]
+                exif = im.getexif()
+                t = exif[306]
+                
+
                 try:
-                    print("try:",t)
-                    t = t.timestamp()
-                    print("\t",t)
+                    im = Image.open(os.path.join(self.source_dir,x))
+                    exif = im.getexif()
+                    t = exif[306]  
+                    success = True      
                 except:
-                    t = t
-                                
+                    success = False
+                if success:
+                    try:
+                        buffer = datetime.datetime.strptime(t,'%Y:%m:%d %H:%M:%S')            
+                        t = datetime.datetime.timestamp(buffer)                
+                    except:
+                        t = t 
+                        FAILURES += 1        
             except:
                 t = os.stat(os.path.join(self.source_dir,x)).st_mtime
-                print("except:",t)
 
-            # month = datetime.datetime.fromtimestamp(t).strftime("%m")
-            # year = datetime.datetime.fromtimestamp(t).strftime("%y")
-            # name = "20" + year    
-            # dest = os.path.join(self.dest_dir,name)
-            # if os.path.exists(dest):
-            #     final_dest = os.path.join(dest,MONTHS[month])
-            #     if os.path.exists(final_dest):
-            #         shutil.move(os.path.join(self.source_dir,x),final_dest)
-            #     else:
-            #         os.makedirs(os.path.join(dest,MONTHS[month]))
-            #         shutil.move(os.path.join(self.source_dir,x),final_dest)
-            # else:
-            #     os.makedirs(os.path.join(dest,MONTHS[month]))
-            #     shutil.move(os.path.join(self.source_dir,x),os.path.join(dest,MONTHS[month]))
+            month = datetime.datetime.fromtimestamp(t).strftime("%m")
+            year = datetime.datetime.fromtimestamp(t).strftime("%y")
+            name = "20" + year    
+            dest = os.path.join(self.dest_dir,name)
+            if os.path.exists(dest):
+                final_dest = os.path.join(dest,MONTHS[month])
+                if os.path.exists(final_dest):
+                    shutil.move(os.path.join(self.source_dir,x),final_dest)
+                else:
+                    os.makedirs(os.path.join(dest,MONTHS[month]))
+                    shutil.move(os.path.join(self.source_dir,x),final_dest)
+            else:
+                os.makedirs(os.path.join(dest,MONTHS[month]))
+                shutil.move(os.path.join(self.source_dir,x),os.path.join(dest,MONTHS[month]))
 
     def unsort(self):
         file_count = 0
@@ -139,7 +148,7 @@ try:
         if currentArgument in ("-s", "--sort"):
             sorter = Pysorter(source_dir=arglist[1], dest_dir=arglist[2])
             sorter.sort()
-            print("Has run")
+            print("Has run",FAILURES)
         elif currentArgument in ("-l","--list"):
             print("List")
             sorter = Pysorter(source_dir=arglist[1], dest_dir=None)

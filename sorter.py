@@ -3,13 +3,12 @@ import os
 import shutil
 import sys
 import getopt
-import time
-# import toml
 from PIL import Image
 
 
 __VERSION__ = "1.3.0"
 __AUTHOR__ = "Nicholas Toothaker"
+__PATH__ = os.path.dirname(os.path.abspath(__file__))
 
 MONTHS = {  "01":"January","02":"February","03":"March",
             "04":"April","05":"May","06":"June",
@@ -18,29 +17,21 @@ MONTHS = {  "01":"January","02":"February","03":"March",
 
 FAILURES = 0
 
-no_arg = "ERROR: No arguments given"
-versionMSG = "Version " + __VERSION__ + " by " + __AUTHOR__
-
-options = "u:hs:l:v"
-long_options = ["Help", "Sort", "List"]
-
 ### Class 
 
-class Pysorter:
+class Sorter:
 
     source_dir = ""
     dest_dir = ""
     dest_structure = {}
     dir_contents = []
 
-    def __init__(self,**kwargs):
-        try:self.source_dir = kwargs['source_dir']
-        except: pass        
-        try:self.dest_dir = kwargs['dest_dir']
-        except: pass
+    def __init__(self,source=__PATH__,destination=__PATH__):
+        self.source_dir = source
+        self.dest_dir = destination
         self.dest_structure = {}
-        try:self.dir_contents = self.get_list()
-        except: pass
+        self.dir_contents = self.get_list()
+
     
     def get_list(self):
         buffer = []
@@ -53,8 +44,7 @@ class Pysorter:
     
     def sort(self):
         years = []
-
-        # print("Contents:",self.dir_contents)
+        im = "" 
 
         for x in self.dir_contents: 
 
@@ -132,41 +122,3 @@ class Pysorter:
 
 
 
-### MAIN
-
-arglist = sys.argv[1:]
-
-sys.argv.pop(0)
-# print(sys.argv)
-
-if len(arglist) < 1:
-    # print(no_arg)
-    raise SystemExit
-
-try: 
-    arguments, values = getopt.getopt(arglist, options, long_options)
-    for currentArgument, currentValue in arguments:
-        if currentArgument in ("-s", "--sort"):
-            sorter = Pysorter(source_dir=arglist[1], dest_dir=arglist[2])
-            sorter.sort()
-            print("Has run",FAILURES)
-        elif currentArgument in ("-l","--list"):
-            print("List")
-            sorter = Pysorter(source_dir=arglist[1], dest_dir=None)
-            print(sorter.source_dir)
-            print(sorter.dir_contents)
-        elif currentArgument in ("-u","unsort"):
-            sorter = Pysorter(source_dir=arglist[1])
-            sorter.unsort()
-            print("Has run")
-        elif currentArgument in ("-h", "--Help"):
-            path = os.path.join(os.path.dirname(__file__), ".help.txt")
-            f = open(path,"r")
-            for line in f:
-                print(line, end="")
-        elif currentArgument in ("-v","--version"):
-            print(versionMSG)
-        else:
-            print("Default Launching")
-except getopt.error as err:
-    print(str(err))

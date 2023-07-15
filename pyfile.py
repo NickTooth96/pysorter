@@ -7,6 +7,7 @@ import time
 from PIL import Image
 
 import sorter
+import pseudonym
 
 execution_start = time.time()
 
@@ -28,7 +29,7 @@ versionMSG = "Version " + __VERSION__ + " by " + __AUTHOR__
 ### MAIN
 
 try:
-    optlist, args = getopt.getopt(sys.argv[1:], 'su', ['origin=', 'destination=','sort', 'unsort'])
+    optlist, args = getopt.getopt(sys.argv[1:], 'sup', ['origin=', 'destination=','sort', 'unsort', 'pseudonym'])
 except getopt.GetoptError as err:
     # print help information and exit:
     print("This is a fail")
@@ -38,27 +39,28 @@ except getopt.GetoptError as err:
 for o, a in optlist:
     if o in ("-o","--origin"):
         origin = a
-    if o in ("-d","--destination"):
-        destination = a
-    if o in ("-s","--sort"):
-        pass
-    if o in ("-u","--unsort"):
-        pass
-
-for o, a in optlist:
-    print("Loop Second:",o,a)
-    if o in ("-s","--sort"):
-        fs = sorter.Sorter(origin,destination)
-        fs.sort()
-    elif o in ("-u","--unsort"):
-        fs = sorter.Sorter(origin,destination)
-        fs.unsort()
-    elif o in ("-o","--origin"):
-        pass
     elif o in ("-d","--destination"):
-        pass
+        destination = a
+    elif o in ("-s","--sort"):
+        run = o
+    elif o in ("-u","--unsort"):
+        run = o
+    elif o in ("-p","--pseudonym"):
+        run = o
     else:
         assert False, "unhandled option"
+
+if run in ("-s","--sort"):
+    fs = sorter.Sorter(origin,destination)
+    fs.sort()
+elif run in ("-u","--unsort"):
+    fs = sorter.Sorter(origin,destination)
+    fs.unsort()
+elif run in ("-p","--rename"):
+    fs = pseudonym.Pseudoname(origin)
+    fs.rename()
+else:
+    assert False, "unhandled option"
 
 
 ### Print Execution Time

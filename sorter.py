@@ -31,7 +31,6 @@ class Sorter:
         self.dest_dir = destination
         self.dest_structure = {}
         self.dir_contents = self.get_list()
-
     
     def get_list(self):
         buffer = []

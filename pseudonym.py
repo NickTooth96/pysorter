@@ -1,6 +1,7 @@
 import datetime
 import os
 import shutil
+from statistics import mean
 import sys
 import getopt
 from PIL import Image
@@ -18,6 +19,7 @@ MONTHS = {  "01":"January","02":"February","03":"March",
 FAILURES = 0
 
 BLACKLIST = ['97TH', 'REGIMENTAL', 'STRING', 'BAND', '-']
+GRAYLIST = ['THE', 'A', 'AN','OF','ON','AND','TO']
    
     
 
@@ -47,60 +49,81 @@ class Pseudoname():
         return output
     
     def rename(self):
-        # print(self.source_dir)
         for x in self.dir_contents:
-            # print(type(x))
-            x = x.split()
-            self.remove(x)
-            # print(type(x),x)
+            title = ""
+            # print(x)
+            parsed_x = x.split()
+            for i in range(len(parsed_x)-1):
+                if parsed_x[i].upper() not in GRAYLIST:
+                    parsed_x[i] = parsed_x[i].capitalize()
+                if parsed_x[i].upper() not in BLACKLIST and parsed_x[i].find("-") != -1:
+                    split = parsed_x[i].split("-") # may change to try to split by each element of blacklist to make config file easier
+                    parsed_x.remove(parsed_x[i])
+                    for x in split:
+                        parsed_x.insert(i,x)
+            parsed_x = self.remove(parsed_x)
+            for e in parsed_x:
+                title += e + " "
+            # print(title)
     
     def remove(self,list):
-        out = list
-        print("\nProcessing:",list)
-        for e in list:
+        blacklist = BLACKLIST.copy()
+        for i in range(len(list)-1):
             i = 0
-            print("\tHERE")
-            for i in range(len(BLACKLIST)):
-                print("CHECKING:",e,i,BLACKLIST[i])
-                if e.upper() == BLACKLIST[i]:
-                    print("\tMATCH FOUND:",e,BLACKLIST[i])
-                    out.remove(e)
-                    # print("!!! ABOUT TO BREAK !!!",i)
-                    # break
+            # print(list[i])
+            # list[i] = list[i].capitalize()
+            for y in blacklist:
+                if list[i].upper() == y:
+                    blacklist.remove(y)
+                    del list[i]
+                    break
                 else:
-                    i += 1
-            print(list)
-        print("FINAL:",list)
+                    mp = self.reasonable_match(list[i],y)
+                    if mp >= 98 and mp <= 101:
+                        print(list[i],y)
+                        blacklist.remove(y)
+                        print("Removing:",list[i],"-",mp,"match with",y)
+                        del list[i]
+        return list
+
+    def reasonable_match(self,key,remove):
+        i = 0
+        match_percent =  0
+        total_percent = 0
+        key = key.upper()
+        percent_list = []
+        length_percent = len(key) / len(remove)
+        shortest = len(key)
+        longest = len(remove)
+        for x in remove:
+            all_not_alpha = 0
+            if x.isalpha():
+                all_not_alpha += 1
+        if all_not_alpha == 0:
+            return 0.0
+        if len(remove) < shortest:
+            shortest = len(remove)
+            longest = len(key)
+        else:
+            print(remove.ljust(longest, '*'))
+            print(key,remove)
+            for i in range(longest):
+                if key[i] == remove[i]:
+                    match_percent += 1
+                    print(match_percent)
+        match_percent = match_percent / longest
+        percent_list.append(match_percent)
+        percent_list.append(length_percent)
+        total_percent = round(mean(percent_list)*100,2)
+        return total_percent
+
+        
+
+
+
+# fs = Pseudoname()
+# fs.reasonable_match("regimentall","REGIMENTAL")
+
+        
+        
             
-
-
-
-
-
-
-            # print("\tChecking [",e.upper(),"] against ",BLACKLIST)
-            # element = e
-            # e = e.upper()
-            # # print(element)
-            # for word in BLACKLIST:
-            #     word = word.upper()
-            #     # print(">>>",word)
-            #     if e.upper() == word.upper():
-            #         print("\tMATCH FOUND",e,word)
-            #         # list.remove(element)
-            #         print("\t\t\t",out)
-            #         out.remove(word)
-            #     print(list)
-
-
-
-
-
-
-            # if e.upper() in BLACKLIST:
-            #     print("\t\t",e.upper())
-            #     list.remove(e)
-            #     print("\t\t\tRemoving:",e)
-            # else:
-            #     print("\t\t[",e.upper(),"] not found in",BLACKLIST)
-        print("\nProcessed:",out)

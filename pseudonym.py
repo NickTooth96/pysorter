@@ -18,7 +18,7 @@ MONTHS = {  "01":"January","02":"February","03":"March",
 
 FAILURES = 0
 
-BLACKLIST = ['97TH', 'REGIMENTAL', 'STRING', 'BAND', '-']
+BLACKLIST = ['97TH', 'REGIMENTAL', 'STRING', 'BAND', '-','']
 GRAYLIST = ['THE', 'A', 'AN','OF','ON','AND','TO']
    
     
@@ -51,27 +51,26 @@ class Pseudoname():
     def rename(self):
         for x in self.dir_contents:
             title = ""
-            # print(x)
+            print("\n",x)
             parsed_x = x.split()
-            for i in range(len(parsed_x)-1):
-                if parsed_x[i].upper() not in GRAYLIST:
-                    parsed_x[i] = parsed_x[i].capitalize()
+            for i in range(len(parsed_x)):
                 if parsed_x[i].upper() not in BLACKLIST and parsed_x[i].find("-") != -1:
                     split = parsed_x[i].split("-") # may change to try to split by each element of blacklist to make config file easier
                     parsed_x.remove(parsed_x[i])
+                    # print(parsed_x)
                     for x in split:
                         parsed_x.insert(i,x)
+                if parsed_x[i].upper() not in GRAYLIST:
+                    parsed_x[i] = parsed_x[i].capitalize()
             parsed_x = self.remove(parsed_x)
             for e in parsed_x:
                 title += e + " "
-            # print(title)
+            print("|___",title)
     
     def remove(self,list):
         blacklist = BLACKLIST.copy()
         for i in range(len(list)-1):
             i = 0
-            # print(list[i])
-            # list[i] = list[i].capitalize()
             for y in blacklist:
                 if list[i].upper() == y:
                     blacklist.remove(y)
@@ -80,10 +79,9 @@ class Pseudoname():
                 else:
                     mp = self.reasonable_match(list[i],y)
                     if mp >= 98 and mp <= 101:
-                        print(list[i],y)
                         blacklist.remove(y)
-                        print("Removing:",list[i],"-",mp,"match with",y)
                         del list[i]
+                    i += 1
         return list
 
     def reasonable_match(self,key,remove):
@@ -92,9 +90,14 @@ class Pseudoname():
         total_percent = 0
         key = key.upper()
         percent_list = []
+
+        if len(key) == 0 or len(remove) == 0:
+            return 0
+        
         length_percent = len(key) / len(remove)
         shortest = len(key)
         longest = len(remove)
+
         for x in remove:
             all_not_alpha = 0
             if x.isalpha():
@@ -105,12 +108,15 @@ class Pseudoname():
             shortest = len(remove)
             longest = len(key)
         else:
-            print(remove.ljust(longest, '*'))
-            print(key,remove)
+            # print(longest,len(key))
+            key = key.ljust(longest,'*')
+            # for i in range(len(key),longest):
+            #     remove += '*'
+            # print(key,remove)
             for i in range(longest):
                 if key[i] == remove[i]:
                     match_percent += 1
-                    print(match_percent)
+                    # print(match_percent)
         match_percent = match_percent / longest
         percent_list.append(match_percent)
         percent_list.append(length_percent)

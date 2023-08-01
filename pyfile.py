@@ -1,6 +1,7 @@
 import datetime
 import os
 import shutil
+import subprocess
 import sys
 import argparse
 import time
@@ -15,7 +16,10 @@ __VERSION__ = "1.4.0"
 __AUTHOR__ = "Nicholas Toothaker"
 __PATH__ = os.path.dirname(os.path.abspath(__file__))
 
-NO_ARG = "ERROR: No arguments given"
+NO_ARG = "\nERROR: No Valid Argument\nType 'pyfile.py --help' for valid arguments\n"
+SOURCE_HELP = "Source directory to sort or rename. Defaults to root directory of module."
+DEST_HELP = """Destination directory for sorted files. Not used for Psudonym. Defaults to root directory of module."
+If source is given with no destination then destination is set to source."""
 MONTHS = {  "01":"January","02":"February","03":"March",
             "04":"April","05":"May","06":"June",
             "07":"July","08":"August","09":"September",
@@ -30,7 +34,7 @@ parser.add_argument('-s','--sort', action='store_true')
 parser.add_argument('-u','--unsort', action='store_true')
 parser.add_argument('-r','--rename', action='store_true')
 parser.add_argument('-v','--version', action='store_true')
-parser.add_argument('--source',dest='source',default=__PATH__)
+parser.add_argument('--source',dest='source',default=__PATH__, help=SOURCE_HELP)
 parser.add_argument('--destination',dest='destination',default=__PATH__)
 args = parser.parse_args()
 
@@ -43,6 +47,7 @@ elif not args.source and args.destination:
 ### MAIN
 
 
+# subprocess.call("clear", shell=True)
 if args.sort:
     sorter = sorter.Sorter(args.source,args.destination)
     sorter.sort()

@@ -1,0 +1,32 @@
+NAME
+    pyfile - A small tool for sorting image files and a few other things.
+USAGE
+    pyfile [OPTION]... [FILE]...
+SYNOPSIS
+    text
+DESCRIPTION
+    test
+
+    -s, --sort  
+        Requires a valid file path
+        sort images in source directory into directories
+        by year/month
+    -u, --unsort
+        Requires a valid file path
+        unsort image files in source directory
+        if they are sorted by year/month 
+        (mostly exists for testing)
+    -r, --rename
+        Requires a valid file path
+        rename files in source directory 
+        using input parameters
+    -h, --help
+        display this help and exit
+    -v, --version
+        output version information
+AUTHOR 
+    Written by Nicholas Toothaker
+COPYWRITE
+    Copywrite (C) 2023 Nicholas Toothaker 
+    This is free software: you are free to change and redistribute
+    it. There is NO WARRANTY, to the extent permitted by law. 

@@ -11,7 +11,7 @@ import pseudonym
 
 execution_start = time.time()
 
-__VERSION__ = "1.3.0"
+__VERSION__ = "1.4.0"
 __AUTHOR__ = "Nicholas Toothaker"
 __PATH__ = os.path.dirname(os.path.abspath(__file__))
 

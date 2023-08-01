@@ -24,61 +24,14 @@ This will display the help page for pyfile. The help page should explain the too
 
 ## Quick Start
 
-### Comment Out Lines
+### Sort Images by Year/Month
 
-To add block comments to a VHDL file follow these steps.
+To sort images into directories by year/month type the following:
 
-1. Open a terminal in the root directory of your VHDL project.
-1. Open the `.vhd` file you want to add comments to.
-1. At the empty line where you want the block comment to begin type `block start`
-1. At the empty line where you want to end the block comment type `block end` see the example below:
+```python3 pyfile.py -s --source=source --destination=destination```
 
-    ``` 
-    s_s     <= "00000";
-        wait for cCLK_PER;
-       
-        s_s     <= "00000";
-        wait for cCLK_PER;
-    block start
-        s_s     <= "00001";
-        wait for cCLK_PER;
-  
-        s_s     <= "00010";
-        wait for cCLK_PER;
-    block end
+### Unsort Images
 
-1. Open the terminal and run the following command
-`python3 ./blockcom/blockcom.py -c [filepath]`
-where `[filepath]` is the name of the `.vhd` file that you are using with the relative path from `file.vhd` to blockcom.
-1. blockcom will parse through the given file and print "File Processed" to the command line.
+To unsort images that are in directories sorted by year/month type the following:
 
-### Uncomment
-
-To remove block comments, you have placed in a VHDL file follow these steps.
-
-1. Open a terminal in the root directory of your VHDL project and run the following command
-`python3 ./blockcom/blockcom.py -u [filepath]`
-where `[filepath]` is the name of the `.vhd` file that you are using with the realative path from blockcom to `file.vhd`.
-
->**Pro Tip:** type in the path from the root directory to `file.vhd` first so that you can use tab complete.
-
-1. blockcom will parse through the given file and print "File Processed" to the command line.
-
-### Removing existing Block Comments
-
-To remove block comments that blockcom did not create you have to prepare the file by adding appropriate block flags. Go to the first line of the block comment you want to remove, and change it as shown:
-
-| Original | New |
-| :--- | :--- |
-|| 1 -- block start |
-|1  -- code line 1 | 2 -- code line 1 |
-|2  -- code line 2 | 3 -- code line 2 |
-|3  -- code line 3  | 4 -- code line 3 |
-|| 5 -- block end |
-
->**NOTE:** Make sure that block flags are the only text on a line.
-
-1. Open a terminal in the root directory of your VHDL project and run the following command
-`python3 ./blockcom/blockcom.py -u [filepath]`
-where `[filepath]` is the name of the `.vhd` file that you are using with the realative path from blockcom to `file.vhd`.
-1. blockcom will parse through the given file and print "File Processed" to the command line.
+```python3 pyfile.py -u --source=source```

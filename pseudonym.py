@@ -11,17 +11,12 @@ __VERSION__ = "1.3.0"
 __AUTHOR__ = "Nicholas Toothaker"
 __PATH__ = os.path.dirname(os.path.abspath(__file__))
 
-MONTHS = {  "01":"January","02":"February","03":"March",
-            "04":"April","05":"May","06":"June",
-            "07":"July","08":"August","09":"September",
-            "10":"October","11":"November","12":"December"}
-
-FAILURES = 0
-
 BLACKLIST = ['97TH', 'REGIMENTAL', 'STRING', 'BAND', '-','']
 GRAYLIST = ['THE', 'A', 'AN','OF','ON','AND','TO']
-   
-    
+
+
+### Class
+
 
 class Pseudoname():
     
@@ -30,7 +25,7 @@ class Pseudoname():
     dest_structure = {}
     dir_contents = []
 
-    def __init__(self,source=__PATH__,destination=__PATH__):
+    def __init__(self,source,destination):
         self.source_dir = source
         self.dest_dir = destination
         self.dest_structure = {}

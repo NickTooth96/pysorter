@@ -2,7 +2,7 @@ import datetime
 import os
 import shutil
 import sys
-import getopt
+import argparse
 import time
 from PIL import Image
 
@@ -11,58 +11,51 @@ import pseudonym
 
 execution_start = time.time()
 
-
 __VERSION__ = "1.3.0"
 __AUTHOR__ = "Nicholas Toothaker"
 __PATH__ = os.path.dirname(os.path.abspath(__file__))
 
+NO_ARG = "ERROR: No arguments given"
 MONTHS = {  "01":"January","02":"February","03":"March",
             "04":"April","05":"May","06":"June",
             "07":"July","08":"August","09":"September",
             "10":"October","11":"November","12":"December"}
 
-FAILURES = 0
+parser = argparse.ArgumentParser(
+                    prog='Pyfile',
+                    description='Sorts image files by year and month.',
+                    epilog='By Nicholas Toothaker')
 
-no_arg = "ERROR: No arguments given"
-versionMSG = "Version " + __VERSION__ + " by " + __AUTHOR__
+parser.add_argument('-s','--sort', action='store_true')
+parser.add_argument('-u','--unsort', action='store_true')
+parser.add_argument('-r','--rename', action='store_true')
+parser.add_argument('-v','--version', action='store_true')
+parser.add_argument('--source',dest='source',default=__PATH__)
+parser.add_argument('--destination',dest='destination',default=__PATH__)
+args = parser.parse_args()
+
+if args.source and not args.destination:
+    args.destination = args.source
+elif not args.source and args.destination:
+    args.source = args.destination 
+
 
 ### MAIN
 
-try:
-    optlist, args = getopt.getopt(sys.argv[1:], 'sup', ['origin=', 'destination=','sort', 'unsort', 'pseudonym'])
-except getopt.GetoptError as err:
-    # print help information and exit:
-    print("This is a fail")
-    print(err)  # will print something like "option -a not recognized"
-    sys.exit(2)
 
-for o, a in optlist:
-    if o in ("-o","--origin"):
-        origin = a
-    elif o in ("-d","--destination"):
-        destination = a
-    elif o in ("-s","--sort"):
-        run = o
-    elif o in ("-u","--unsort"):
-        run = o
-    elif o in ("-p","--pseudonym"):
-        run = o
-    else:
-        assert False, "unhandled option"
-
-if run in ("-s","--sort"):
-    fs = sorter.Sorter(origin,destination)
-    fs.sort()
-elif run in ("-u","--unsort"):
-    fs = sorter.Sorter(origin,destination)
-    fs.unsort()
-elif run in ("-p","--rename"):
-    fs = pseudonym.Pseudoname(origin)
-    fs.rename()
+if args.sort:
+    sorter = sorter.Sorter(args.source,args.destination)
+    sorter.sort()
+elif args.unsort:
+    sorter = sorter.Sorter(args.source,args.destination)
+    sorter.unsort()
+elif args.rename:
+    sorter = pseudonym.Pseudoname(args.source,args.destination)
+    sorter.rename()
+elif args.version:
+    print("Pyfile ",__VERSION__)
 else:
-    assert False, "unhandled option"
+    print(NO_ARG)
 
-
-### Print Execution Time
-
+# print program execution time
 print("--- Program Execution Time: %.2f seconds ---" % (time.time() - execution_start))

@@ -23,50 +23,20 @@ dest_dir = ""
 dest_structure = {}
 dir_contents = []
 
-
-def get_list():
-    buffer = []
-    output = []
-    buffer = os.listdir(source_dir)
-    for x in buffer:
-        if os.path.isfile(os.path.join(source_dir,x)):
-            output.append(x)
-    return output
-
 def sort(src,dest,dir_list):
     years = []
     im = ""
 
-    for x in dir_contents: 
-        # try:
-        #     im = Image.open(os.path.join(source_dir,x))
-        #     exif = im.getexif()
-        #     t = exif[306]               
-
-        #     try:
-        #         im = Image.open(os.path.join(source_dir,x))
-        #         exif = im.getexif()
-        #         t = exif[306]  
-        #         success = True      
-        #     except:
-        #         success = False
-        #     if success:
-        #         try:
-        #             buffer = datetime.datetime.strptime(t,'%Y:%m:%d %H:%M:%S')            
-        #             t = datetime.datetime.timestamp(buffer)                
-        #         except:
-        #             t = t 
-        #             FAILURES += 1        
-        # except:
-        #     t = os.stat(os.path.join(source_dir,x)).st_mtime
-        # im.close()
-
-        im = Image.open(os.path.join(source_dir,x))
+    for x in dir_list: 
+  
+        im = Image.open(os.path.join(src,x))
         exif = im.getexif()
         try:
             t = exif[306]
         except:
-            t = os.stat(os.path.join(source_dir,x)).st_mtime 
+            t = os.stat(os.path.join(src,x)).st_mtime 
+
+        print(x,t)
 
         month = datetime.datetime.fromtimestamp(t).strftime("%m")
         year = datetime.datetime.fromtimestamp(t).strftime("%y")
@@ -74,15 +44,12 @@ def sort(src,dest,dir_list):
         dest = os.path.join(dest_dir,name)
         if os.path.exists(dest):
             final_dest = os.path.join(dest,MONTHS[month])
-            if os.path.exists(final_dest):
-                shutil.move(os.path.join(source_dir,x),final_dest)
-                pass
-            else:
+            if not os.path.exists(final_dest):
                 os.makedirs(os.path.join(dest,MONTHS[month]))
-                shutil.move(os.path.join(source_dir,x),final_dest)
         else:
             os.makedirs(os.path.join(dest,MONTHS[month]))
-            shutil.move(os.path.join(source_dir,x),os.path.join(dest,MONTHS[month]))
+        print(os.path.join(src,x),"->",os.path.join(src,dest,MONTHS[month],x))
+        shutil.move(os.path.join(src,x),os.path.join(src,dest,MONTHS[month],x))
 
 def unsort(src,dest,dir_list):
     file_count = 0

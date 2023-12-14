@@ -34,7 +34,6 @@ def remove_non_image(dir_list,source_dir):
 
 def display(list,source_dir):
     length = len(str(len(list))) + 1
-    print(length)
     for file in list:
         im = Image.open(os.path.join(source_dir,file))
         exif = im.getexif()

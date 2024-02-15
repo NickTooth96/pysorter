@@ -17,6 +17,8 @@ __VERSION__ = "1.4.0"
 __AUTHOR__ = "Nicholas Toothaker"
 __PATH__ = os.getcwd()
 
+sys.path.append(os.path.join(__PATH__,"src"))
+
 NO_ARG = "\nERROR: No Valid Argument\nType 'pyfile.py --help' for valid arguments\n"
 SOURCE_HELP = "Source directory to sort or rename. Defaults to root directory of module."
 DEST_HELP = """Destination directory for sorted files. Not used for Psudonym. Defaults to root directory of module."
@@ -37,8 +39,8 @@ parser.add_argument('-s','--sort', action='store_true')
 parser.add_argument('-u','--unsort', action='store_true')
 parser.add_argument('-r','--rename', action='store_true')
 parser.add_argument('-v','--version', action='store_true')
-parser.add_argument('--source',dest='source',default=__PATH__, help=SOURCE_HELP)
-parser.add_argument('--destination',dest='destination',default=__PATH__)
+parser.add_argument('--src',dest='source',default=__PATH__, help=SOURCE_HELP)
+parser.add_argument('--dst',dest='destination',default=__PATH__)
 args = parser.parse_args()
 
 if args.source and not args.destination:
@@ -58,18 +60,22 @@ if args.destination:
 else:
     dest = __PATH__
 
-dir_list = build_list.get_list(src,dest)
+dir_list = build_list.get_list(src)
 im_list = build_list.remove_non_image(dir_list,src)
 
 # subprocess.call("clear", shell=True)
 if args.list:
+    path = ""
     if args.source:
-        sorter = sorter.Sorter(args.source,args.destination)
-        print(__PATH__)
+        print("path passed in: ",args.source)
+        path = args.source
+        dir_list = build_list.get_list(args.source)
     else:
-        sorter = sorter.Sorter(__PATH__,__PATH__)
-        print(__PATH__)
-    print(sorter.get_list())
+        print("path not passed in")
+        path = __PATH__
+        dir_list = build_list.get_list()
+    d_list = build_list.get_list(path)
+    build_list.display(d_list,path)
 
 elif args.sort:
     sorter.sort(src,dest,im_list)

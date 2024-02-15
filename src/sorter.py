@@ -14,10 +14,6 @@ MONTHS = {  "01":"January","02":"February","03":"March",
             "07":"July","08":"August","09":"September",
             "10":"October","11":"November","12":"December"}
 
-
-### Class
-
-
 source_dir = ""
 dest_dir = ""
 dest_structure = {}
@@ -36,7 +32,7 @@ def sort(src,dest,dir_list):
         except:
             t = os.stat(os.path.join(src,x)).st_mtime 
 
-        print(x,t)
+        print(x,datetime.datetime.fromtimestamp(t))
 
         month = datetime.datetime.fromtimestamp(t).strftime("%m")
         year = datetime.datetime.fromtimestamp(t).strftime("%y")
@@ -49,7 +45,7 @@ def sort(src,dest,dir_list):
         else:
             os.makedirs(os.path.join(dest,MONTHS[month]))
         print(os.path.join(src,x),"->",os.path.join(src,dest,MONTHS[month],x))
-        shutil.move(os.path.join(src,x),os.path.join(src,dest,MONTHS[month],x))
+        # shutil.move(os.path.join(src,x),os.path.join(src,dest,MONTHS[month],x))
 
 def unsort(src,dest,dir_list):
     file_count = 0

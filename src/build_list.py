@@ -3,22 +3,24 @@ import datetime
 
 from PIL import Image
 
+__PATH__ = os.getcwd()
 
-def get_list(src,dest):
+
+def get_list(src=os.getcwd()):
     """returns list of all files in directory
 
     Args:
         src (_type_): _description_
-        dest (_type_): _description_
 
     Returns:
         list: list of all files in current directory (dest)
     """
     buffer = []
     output = []
+    print(">>>",src)
     buffer = os.listdir(src)
     for x in buffer:
-        if os.path.isfile(os.path.join(dest,x)):
+        if os.path.isfile(os.path.join(src,x)):
             output.append(x)
     return output
 
@@ -32,7 +34,7 @@ def remove_non_image(dir_list,source_dir):
             pass
     return output
 
-def display(list,source_dir):
+def display_image(list,source_dir):
     length = len(str(len(list))) + 1
     for file in list:
         im = Image.open(os.path.join(source_dir,file))
@@ -48,7 +50,12 @@ def display(list,source_dir):
             date = t + " <- NOT USEFUL"
 
         print(idex,shorten(file,25),date)
-        # print(idex,shorten(file,25))
+        
+def display(list,source_dir):
+    length = len(str(len(list))) + 1
+    for file in list:
+        idex = str(int(list.index(file))).rjust(length,"0")
+        print(idex,shorten(file,25))
 
 def shorten(str_in,length):
     out = ""    

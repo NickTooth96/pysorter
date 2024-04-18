@@ -42,7 +42,7 @@ def sort(src,dest,dir_list,debug=False):
         dest_dir = os.path.join(dest,name)
         final_dest = os.path.join(dest_dir,month_name)
 
-        if not os.path.exists(final_dest):
+        if not os.path.exists(final_dest) and not os.path.exists(os.path.join(dest,month_name)):
             if debug:
                 new_dir[final_dest] = False
             else:       

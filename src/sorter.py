@@ -20,7 +20,7 @@ dest_structure = {}
 dir_contents = []
 
 def sort(src,dest,dir_list,debug=False):
-    years = []
+    print(f"RUNNING {__file__}.{sys._getframe().f_code.co_name} in DEBUG mode") if debug else None
     im = ""
     to_from = {}
     new_dir = {}
@@ -64,9 +64,7 @@ def sort(src,dest,dir_list,debug=False):
 
 
 def unsort(src,dst,files={},dirs=[],debug=False):
-
-    print(f"\n !!! Running unsort() in DEBUG mode with \nSRC: {src} \nDST: {dst}\nFFILES: {files}\nDIRECTORIES: {dirs}\n") if debug else None
-
+    print(f"RUNNING {__file__}.{sys._getframe().f_code.co_name} in DEBUG mode") if debug else None
     buffer = os.listdir(src)
     dirs = []
     
@@ -94,5 +92,5 @@ def unsort(src,dst,files={},dirs=[],debug=False):
 def move(src,dst):
     try:
         shutil.move(src,dst)
-    except:
-        print("FAILED TO MOVE:",src, "->",dst)
+    except Exception as e:
+        print(f"{e}\nFAILED TO MOVE:",src, "->",dst)

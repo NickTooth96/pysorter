@@ -36,6 +36,7 @@ parser.add_argument('-r','--rename', action='store_true')
 parser.add_argument('-v','--version', action='store_true')
 parser.add_argument('--type', choices=['image','all','directory'], default=['all'], nargs=1)
 parser.add_argument('--mode', choices=['auto','manual','debug'], default=['auto'], nargs=1)
+parser.add_argument('--verbose', action='store_true')
 parser.add_argument('--src',dest='source', help=SOURCE_HELP)
 parser.add_argument('--dst',dest='destination', help=DEST_HELP)
 args = parser.parse_args()
@@ -47,12 +48,13 @@ args.type = args.type[0] if args.type else None
 
 _mode = args.mode if args.mode else "auto"
 _type = args.type if args.type else "all"
-_debug = True if _mode == 'debug' else False
+_debug = True if _mode == 'debug' or args.verbose else False
 _src = args.source if args.source else __PATH__
 _dst = args.destination if args.destination else _src
 
-print(f"\nSource: {_src}\nDestination: {_dst}\nMode: {_mode}\nType: {_type}\nDebug: {_debug}\n") if _debug else None
 [print(f"{x}: {vars(args)[x]}") for x in vars(args)] if _debug else None
+print(f"\nSource: {_src}\nDestination: {_dst}\nMode: {_mode}\nType: {_type}\nDebug: {_debug}\n") if _debug else None
+
 
 dlist = build_list.get_list(_src)
 im_list = build_list.remove_non_image(dlist,_src)

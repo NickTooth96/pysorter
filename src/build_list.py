@@ -5,7 +5,7 @@ import datetime
 from PIL import Image
 
 __PATH__ = os.getcwd()
-IGNORE = ["ini"]
+IGNORE = ['ini','info']
 __file__ = "build_list"
 
 
@@ -54,7 +54,7 @@ def dir_list(src=os.getcwd(), debug=False):
             output.append(x)
     return output
 
-def remove_non_image(dir_list,source_dir):
+def remove_non_image(dir_list,source_dir,debug=False):
     output = []
     for file in dir_list:
         try:
@@ -64,7 +64,7 @@ def remove_non_image(dir_list,source_dir):
             pass
     return output
 
-def display_image(list,source_dir):
+def display_image(list,source_dir, debug=False):
     length = len(str(len(list))) + 1
     for file in list:
         im = Image.open(os.path.join(source_dir,file))

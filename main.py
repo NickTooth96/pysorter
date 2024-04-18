@@ -1,11 +1,6 @@
-import datetime
 import os
-import shutil
-import subprocess
-import sys
 import argparse
 import time
-from PIL import Image
 
 import src.sorter as sorter
 import src.pseudonym as pseudonym
@@ -16,8 +11,6 @@ execution_start = time.time()
 __VERSION__ = "1.4.0"
 __AUTHOR__ = "Nicholas Toothaker"
 __PATH__ = os.getcwd()
-
-sys.path.append(os.path.join(__PATH__,"src"))
 
 NO_ARG = "\nERROR: No Valid Argument\nType 'pyfile.py --help' for valid arguments\n"
 SOURCE_HELP = "Source directory to sort or rename. Defaults to root directory of module."
@@ -36,65 +29,48 @@ parser = argparse.ArgumentParser(
 parser.add_argument('-d','--do_this', action='store_true')
 
 # add -l, --list with required argument to select between all and image only
-parser.add_argument('-l','--list', metavar=['all','image'], nargs=1)
-
-
-parser.add_argument('-s','--sort', metavar=['in-place','to-dst'], nargs=1)
+parser.add_argument('-l','--list', action='store_true')
+parser.add_argument('-s','--sort', action='store_true')
 parser.add_argument('-u','--unsort', action='store_true')
 parser.add_argument('-r','--rename', action='store_true')
 parser.add_argument('-v','--version', action='store_true')
+parser.add_argument('--type', choices=['image','all','directory'], default=['all'], nargs=1)
+parser.add_argument('--mode', choices=['auto','manual','debug'], default=['auto'], nargs=1)
 parser.add_argument('--src',dest='source', help=SOURCE_HELP)
 parser.add_argument('--dst',dest='destination', help=DEST_HELP)
 args = parser.parse_args()
-
-if args.source and not args.destination:
-    args.destination = args.source
-elif not args.source and args.destination:
-    args.source = args.destination 
-
+ 
+args.mode = args.mode[0] if args.mode else None
+args.type = args.type[0] if args.type else None
 
 ### MAIN
 
+_mode = args.mode if args.mode else "auto"
+_type = args.type if args.type else "all"
+_debug = True if _mode == 'debug' else False
+_src = args.source if args.source else __PATH__
+_dst = args.destination if args.destination else _src
 
-# for arg in vars(args):
-#     print(arg, getattr(args, arg))
-    
-if args.source:
-    src = args.source
-else:
-    src = __PATH__
-if args.destination:
-    dest = args.destination
-else:
-    dest = args.source
+print(f"\nSource: {_src}\nDestination: {_dst}\nMode: {_mode}\nType: {_type}\nDebug: {_debug}\n") if _debug else None
+[print(f"{x}: {vars(args)[x]}") for x in vars(args)] if _debug else None
 
-dir_list = build_list.get_list(src)
-im_list = build_list.remove_non_image(dir_list,src)
+dlist = build_list.get_list(_src)
+im_list = build_list.remove_non_image(dlist,_src)
 
 # subprocess.call("clear", shell=True)
 if args.list:
-
-    if args.list[0] == "image":
-        build_list.display_image(im_list,src)
-    elif args.list[0] == "all":
-        d_list = build_list.get_list(src)
-        build_list.display(d_list,src)
-
+    build_list.make_list(dlist,_src,_type,_debug)
 elif args.sort:
-    if args.sort[0] == "in-place":
-        sorter.sort(src,src,im_list)
-    elif args.sort[0] == "to-dst":
-        sorter.sort(src,dest,im_list)
-
+    sorter.sort(_src,_dst,im_list,_debug)
 elif args.unsort:
-    sorter.unsort(src,dest)
+    sorter.unsort(_src,_dst,debug=_debug)
 elif args.rename:
-    sorter = pseudonym.Pseudoname(args.source,args.destination)
+    sorter = pseudonym.Pseudoname(_src,_dst)
     sorter.rename()
 elif args.version:
     print("pyfile ",__VERSION__)
 elif args.do_this:        
-    build_list.display(im_list,src)
+    build_list.display(im_list,_src)
 else:
     print(NO_ARG)
 

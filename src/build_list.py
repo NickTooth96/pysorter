@@ -17,7 +17,6 @@ def get_list(src=os.getcwd()):
     """
     buffer = []
     output = []
-    print(">>>",src)
     buffer = os.listdir(src)
     for x in buffer:
         if os.path.isfile(os.path.join(src,x)):

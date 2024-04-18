@@ -23,51 +23,55 @@ def sort(src,dest,dir_list):
     years = []
     im = ""
 
+    to_from = {}
+    FAILURES = 0
+
     for x in dir_list: 
-  
         im = Image.open(os.path.join(src,x))
         exif = im.getexif()
         try:
-            t = exif[306]
+            
+            temp = exif[306]
+            t = datetime.datetime.strptime(temp,"%Y:%m:%d %H:%M:%S").timestamp()
         except:
             t = os.stat(os.path.join(src,x)).st_mtime 
-
-        print(x,datetime.datetime.fromtimestamp(t))
 
         month = datetime.datetime.fromtimestamp(t).strftime("%m")
         year = datetime.datetime.fromtimestamp(t).strftime("%y")
         name = "20" + year    
-        dest = os.path.join(dest_dir,name)
-        if os.path.exists(dest):
-            final_dest = os.path.join(dest,MONTHS[month])
-            if not os.path.exists(final_dest):
-                os.makedirs(os.path.join(dest,MONTHS[month]))
+        dest_dir = os.path.join(dest,name)
+        final_dest = os.path.join(dest_dir,MONTHS[month])
+
+        # print(src,final_dest)
+
+        if not os.path.exists(final_dest):
+            os.makedirs(final_dest)
+
+        # print("MOVING:",os.path.join(src,x),"to",os.path.join(final_dest,x))
+        to_from[os.path.join(src,x)] = os.path.join(final_dest,x)
+        # shutil.move(os.path.join(src,x),os.path.join(final_dest,x))
+    for k,v in to_from.items():
+        move(k,v)
+
+
+def unsort(src,dst,files={},dirs={}):
+    buffer = os.listdir(src)
+    dirs = []
+    for x in buffer:
+        if os.path.isfile(os.path.join(src,x)):
+            move(os.path.join(src,x),os.path.join(dst,x))
         else:
-            os.makedirs(os.path.join(dest,MONTHS[month]))
-        print(os.path.join(src,x),"->",os.path.join(src,dest,MONTHS[month],x))
-        # shutil.move(os.path.join(src,x),os.path.join(src,dest,MONTHS[month],x))
+            dirs.append(os.path.join(src,x))
+            unsort(os.path.join(src,x),dst)
+    for x in dirs:
+        try:
+            os.rmdir(x)
+        except:
+            print("FAILED TO REMOVE:",x)
 
-def unsort(src,dest,dir_list):
-    file_count = 0
-    buffer = os.listdir(dir_list)
-    
-    for x in buffer:   
-        path_0 = os.path.join(source_dir,x)          
-        if os.path.isdir(path_0) and "20" in x:
-            buffer = os.listdir(path_0)   
 
-            for x in buffer: 
-                path_1 = os.path.join(path_0,x) 
-                if os.path.isdir(path_1) and x in MONTHS.values():
-                    buffer = os.listdir(path_1) 
-
-                    for x in buffer:
-                        path_2 = os.path.join(path_1,x)
-                        if os.path.isfile(path_2):
-                            file_count += 1
-                            shutil.move(path_2,source_dir)
-                            
-                        else:
-                            print("NONFILE FOUND")
-            # print(path_0)
-            shutil.rmtree(path_0)
+def move(src,dst):
+    try:
+        shutil.move(src,dst)
+    except:
+        print("FAILED TO MOVE:",src, "->",dst)

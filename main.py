@@ -34,13 +34,17 @@ parser = argparse.ArgumentParser(
                     epilog='By Nicholas Toothaker')
 
 parser.add_argument('-d','--do_this', action='store_true')
-parser.add_argument('-l','--list', action='store_true')
-parser.add_argument('-s','--sort', action='store_true')
+
+# add -l, --list with required argument to select between all and image only
+parser.add_argument('-l','--list', metavar=['all','image'], nargs=1)
+
+
+parser.add_argument('-s','--sort', metavar=['in-place','to-dst'], nargs=1)
 parser.add_argument('-u','--unsort', action='store_true')
 parser.add_argument('-r','--rename', action='store_true')
 parser.add_argument('-v','--version', action='store_true')
-parser.add_argument('--src',dest='source',default=__PATH__, help=SOURCE_HELP)
-parser.add_argument('--dst',dest='destination',default=__PATH__)
+parser.add_argument('--src',dest='source', help=SOURCE_HELP)
+parser.add_argument('--dst',dest='destination', help=DEST_HELP)
 args = parser.parse_args()
 
 if args.source and not args.destination:
@@ -50,6 +54,10 @@ elif not args.source and args.destination:
 
 
 ### MAIN
+
+
+# for arg in vars(args):
+#     print(arg, getattr(args, arg))
     
 if args.source:
     src = args.source
@@ -58,30 +66,28 @@ else:
 if args.destination:
     dest = args.destination
 else:
-    dest = __PATH__
+    dest = args.source
 
 dir_list = build_list.get_list(src)
 im_list = build_list.remove_non_image(dir_list,src)
 
 # subprocess.call("clear", shell=True)
 if args.list:
-    path = ""
-    if args.source:
-        print("path passed in: ",args.source)
-        path = args.source
-        dir_list = build_list.get_list(args.source)
-    else:
-        print("path not passed in")
-        path = __PATH__
-        dir_list = build_list.get_list()
-    d_list = build_list.get_list(path)
-    build_list.display(d_list,path)
+
+    if args.list[0] == "image":
+        build_list.display_image(im_list,src)
+    elif args.list[0] == "all":
+        d_list = build_list.get_list(src)
+        build_list.display(d_list,src)
 
 elif args.sort:
-    sorter.sort(src,dest,im_list)
+    if args.sort[0] == "in-place":
+        sorter.sort(src,src,im_list)
+    elif args.sort[0] == "to-dst":
+        sorter.sort(src,dest,im_list)
 
 elif args.unsort:
-    sorter.unsort(src,dest,im_list)
+    sorter.unsort(src,dest)
 elif args.rename:
     sorter = pseudonym.Pseudoname(args.source,args.destination)
     sorter.rename()

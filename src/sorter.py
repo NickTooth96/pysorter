@@ -35,6 +35,7 @@ def sort(src,dest,dir_list,debug=False):
         except:
             t = os.stat(os.path.join(src,x)).st_mtime 
 
+        im.close()
         month = datetime.datetime.fromtimestamp(t).strftime("%m")
         year = datetime.datetime.fromtimestamp(t).strftime("%y")
         name = "20" + year  
@@ -48,9 +49,8 @@ def sort(src,dest,dir_list,debug=False):
             else:       
                 new_dir[final_dest] = True    
                 os.makedirs(final_dest)
-        
-
         to_from[os.path.join(src,x)] = os.path.join(final_dest,x)
+
     if debug:
         print("--- NEW DIRECTORIES ---")
         for x in new_dir:

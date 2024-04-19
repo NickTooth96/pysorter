@@ -90,7 +90,10 @@ def unsort(src,dst,files={},dirs=[],debug=False):
 
 
 def move(src,dst):
-    try:
-        shutil.move(src,dst)
-    except Exception as e:
-        print(f"{e}\nFAILED TO MOVE:",src, "->",dst)
+    if not os.path.exists(dst):
+        try:
+            shutil.move(src,dst)
+        except Exception as e:
+            print(f"{e}\nFAILED TO MOVE:",src, "->",dst)
+    else:
+        print("DESTINATION EXISTS:",dst)
